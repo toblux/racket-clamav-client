@@ -1,0 +1,23 @@
+name: Run tests
+on: push
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install ClamAV daemon
+        run: sudo apt-get install clamav-daemon
+      - name: Install Racket
+        run: |
+          sudo add-apt-repository ppa:plt/racket
+          sudo apt-get install racket
+      - name: Start clamd
+        run: clamd --config-file=.github/clamd.conf
+      - name: Install clamav-client-lib
+        run: raco pkg install ./clamav-client-lib
+      - name: Run tests
+        run: raco test ./clamav-client-test
+      - name: Shutdown clamd
+        run: echo SHUTDOWN | nc localhost 3310
