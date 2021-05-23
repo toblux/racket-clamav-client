@@ -1,5 +1,5 @@
 #lang info
 
 (define version "0.1")
-(define collection "clamav-client")
+(define collection 'multi)
 (define deps '("base" "rackunit-lib" "clamav-client-lib"))
