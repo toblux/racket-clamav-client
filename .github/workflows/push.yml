@@ -19,9 +19,11 @@ jobs:
           sudo freshclam
       - name: Start clamd
         run: clamd --config-file=.github/clamd.conf
-      - name: Install clamav-client-lib
-        run: raco pkg install ./clamav-client-lib
+      - name: Install packages
+        run: |
+          raco pkg install --auto ./clamav-client-lib
+          raco pkg install --auto ./clamav-client-test
       - name: Run tests
-        run: raco test ./clamav-client-test
+        run: raco test -p clamav-client-test
       - name: Shutdown clamd
         run: echo SHUTDOWN | nc localhost 3310
