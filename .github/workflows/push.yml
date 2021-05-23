@@ -7,16 +7,16 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+      - name: Setup Racket environment
+        uses: Bogdanp/setup-racket@v1.3.1
+        with:
+          version: 'stable'
       - name: Install ClamAV daemon
         run: sudo apt-get install clamav-daemon
       - name: Update ClamAV virus databases
         run: |
           sudo systemctl stop clamav-freshclam
           sudo freshclam
-      - name: Install Racket
-        run: |
-          sudo add-apt-repository ppa:plt/racket
-          sudo apt-get install racket
       - name: Start clamd
         run: clamd --config-file=.github/clamd.conf
       - name: Install clamav-client-lib
