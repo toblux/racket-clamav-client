@@ -9,6 +9,8 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Racket environment
         uses: Bogdanp/setup-racket@v1.3.1
+        with:
+          version: 'stable'
       - name: Install ClamAV daemon
         run: sudo apt-get install clamav-daemon
       - name: Update ClamAV virus databases
