@@ -19,14 +19,7 @@ jobs:
           sudo freshclam
       - name: Start clamd
         run: clamd --config-file=.github/clamd.conf
-      - name: Install packages
-        run: |
-          racket -l- pkg/dirs-catalog --link --check-metadata catalog .
-          raco pkg install \
-            --catalog catalog \
-            --catalog https://pkg-build.racket-lang.org/server/built/catalog/ \
-            --auto clamav-client-test
-      - name: Run tests
-        run: raco test -p clamav-client-test
+      - name: Install packages and run tests
+        run: make ci
       - name: Shutdown clamd
         run: echo SHUTDOWN | nc localhost 3310
