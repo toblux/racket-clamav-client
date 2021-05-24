@@ -9,7 +9,7 @@ Please note: The functions `ping-socket` and `scan-file-socket` are only availab
 Clone or download the repository and install the library with:
 
 ```shell
-raco pkg install --copy ./clamav-client-lib
+make install
 ```
 
 ## Usage
