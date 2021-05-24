@@ -2,17 +2,17 @@ LOCAL_CATALOG_PATH = catalog
 ALL_CATALOGS = $(LOCAL_CATALOG_PATH) $(shell raco pkg config catalogs)
 
 catalog:
-	@echo Creating local packages catalog...
+	@echo "Creating local packages catalog..."
 	racket -l- pkg/dirs-catalog --check-metadata $(LOCAL_CATALOG_PATH) .
 
 install: catalog
-	@echo Installing clamav-client from local packages catalog...
+	@echo "Installing clamav-client from local packages catalog..."
 	raco pkg install \
 		$(foreach catalog, $(ALL_CATALOGS), --catalog $(catalog)) \
 		--auto clamav-client
 
 uninstall:
-	@echo Uninstalling clamav-client and auto-installed dependencies...
+	@echo "Uninstalling clamav-client and auto-installed dependencies..."
 	raco pkg remove --auto clamav-client
 
 ci: catalog
