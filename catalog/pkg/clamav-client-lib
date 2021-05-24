@@ -1,0 +1,1 @@
+#hash((author . "thorsten.blum@toblux.com") (checksum . "") (dependencies . ("base" "typed-racket-lib" "unix-socket-lib")) (description . "Implementation") (modules . ((lib "clamav-client/main.rkt") (lib "clamav-client/clamav-client.rkt"))) (name . "clamav-client-lib") (source . "../clamav-client-lib") (tags . ()))
