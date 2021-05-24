@@ -1,1 +1,0 @@
-#hash((author . "thorsten.blum@toblux.com") (checksum . "") (dependencies . ("base" "rackunit-lib" "clamav-client-lib")) (description . "Tests") (modules . ()) (name . "clamav-client-test") (source . "../clamav-client-test") (tags . ()))
