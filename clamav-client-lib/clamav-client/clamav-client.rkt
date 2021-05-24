@@ -64,7 +64,7 @@
 (: ping-socket (->* (String) Bytes))
 (define (ping-socket [socket-path default-socket-path])
   (unless unix-socket-available?
-    (error "unix sockets are not available on this platform"))
+    (error "Unix sockets are not available on this platform"))
   (call-with-values (lambda () (unix-socket-connect socket-path)) ping))
 
 ;;; Scan input-port
@@ -103,6 +103,8 @@
 (define (scan-file-socket path
                           [socket-path default-socket-path]
                           [chunk-size default-chunk-size])
+  (unless unix-socket-available?
+    (error "Unix sockets are not available on this platform"))
   (call-with-values (lambda () (unix-socket-connect socket-path))
                     (scan-input-port (open-input-file path) chunk-size)))
 
