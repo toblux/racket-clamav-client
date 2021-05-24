@@ -1,0 +1,1 @@
+#hash((author . "thorsten.blum@toblux.com") (checksum . "") (dependencies . ("base" "clamav-client-lib")) (description . "ClamAV Client") (modules . ()) (name . "clamav-client") (source . "../clamav-client") (tags . ()))
