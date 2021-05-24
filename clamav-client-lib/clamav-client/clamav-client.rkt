@@ -57,11 +57,12 @@
       (error 'in "input port not closed"))
     response))
 
-(: ping-tcp (->* (String Positive-Index) Bytes))
-(define (ping-tcp [hostname default-hostname] [port default-port])
+(: ping-tcp (->* () (String Positive-Index) Bytes))
+(define (ping-tcp [hostname default-hostname]
+                  [port default-port])
   (call-with-values (lambda () (tcp-connect hostname port)) ping))
 
-(: ping-socket (->* (String) Bytes))
+(: ping-socket (->* () (String) Bytes))
 (define (ping-socket [socket-path default-socket-path])
   (unless unix-socket-available?
     (error "Unix sockets are not available on this platform"))
