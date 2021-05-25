@@ -16,7 +16,7 @@
                [tcp-connect (-> String Positive-Index (Values Input-Port Output-Port))])
 
 ;;; Clamd commands are documented at https://linux.die.net/man/8/clamd
-;;; or simply run `$ man clamd`
+;;; or simply run `man clamd`
 
 (define default-socket-path "/tmp/clamd.socket")
 (define default-hostname "localhost")
