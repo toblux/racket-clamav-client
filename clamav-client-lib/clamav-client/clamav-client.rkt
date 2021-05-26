@@ -1,12 +1,21 @@
 #lang typed/racket/base
 
 (provide ping-tcp
-         ping-socket
          scan-file-tcp
-         scan-file-socket
-         clean?)
+         clean?
 
-(require racket/string)
+         ;; Only available on Unix platforms
+         ping-socket
+         scan-file-socket
+
+         ;; Parameters
+         socket-path
+         hostname
+         port
+         chunk-size)
+
+(require racket/function
+         racket/string)
 
 (require/typed racket/unix-socket
                [unix-socket-available? Boolean]
@@ -18,12 +27,16 @@
 ;;; Clamd commands are documented at https://linux.die.net/man/8/clamd
 ;;; or simply run `man clamd`
 
-(define default-socket-path "/tmp/clamd.socket")
-(define default-hostname "localhost")
-(define default-port 3310)
+(define socket-path (make-parameter "/tmp/clamd.socket"))
+
+(define hostname (make-parameter "localhost"))
+
+(: port (Parameterof Positive-Index))
+(define port (make-parameter 3310))
 
 ;; Chunk size must not exceed StreamMaxLength as defined in clamd.conf
-(define default-chunk-size 2048)
+(: chunk-size (Parameterof Positive-Index))
+(define chunk-size (make-parameter 2048))
 
 ;;; Helper functions
 
@@ -58,15 +71,15 @@
     response))
 
 (: ping-tcp (->* () (String Positive-Index) Bytes))
-(define (ping-tcp [hostname default-hostname]
-                  [port default-port])
-  (call-with-values (lambda () (tcp-connect hostname port)) ping))
+(define (ping-tcp [hostname (hostname)]
+                  [port (port)])
+  (call-with-values (thunk (tcp-connect hostname port)) ping))
 
 (: ping-socket (->* () (String) Bytes))
-(define (ping-socket [socket-path default-socket-path])
+(define (ping-socket [socket-path (socket-path)])
   (unless unix-socket-available?
     (error "Unix sockets are not available on this platform"))
-  (call-with-values (lambda () (unix-socket-connect socket-path)) ping))
+  (call-with-values (thunk (unix-socket-connect socket-path)) ping))
 
 ;;; Scan input-port
 
@@ -76,7 +89,7 @@
   (write-bytes #"zINSTREAM\0" out)
 
   ;; Stream chunk-sized bytes from input-port to out
-  (for ([bs (in-port (lambda ([in : Input-Port]) (read-bytes chunk-size in)) input-port)])
+  (for ([bs (in-port (λ ([in : Input-Port]) (read-bytes chunk-size in)) input-port)])
     (write-bytes (integer->integer-bytes (bytes-length bs) 4 #f #t) out)
     (write-bytes bs out))
 
@@ -94,19 +107,19 @@
 
 (: scan-file-tcp (->* (String) (String Positive-Index Integer) Bytes))
 (define (scan-file-tcp path
-                       [hostname default-hostname]
-                       [port default-port]
-                       [chunk-size default-chunk-size])
-  (call-with-values (lambda () (tcp-connect hostname port))
+                       [hostname (hostname)]
+                       [port (port)]
+                       [chunk-size (chunk-size)])
+  (call-with-values (thunk (tcp-connect hostname port))
                     (scan-input-port (open-input-file path) chunk-size)))
 
 (: scan-file-socket (->* (String) (String Integer) Bytes))
 (define (scan-file-socket path
-                          [socket-path default-socket-path]
-                          [chunk-size default-chunk-size])
+                          [socket-path (socket-path)]
+                          [chunk-size (chunk-size)])
   (unless unix-socket-available?
     (error "Unix sockets are not available on this platform"))
-  (call-with-values (lambda () (unix-socket-connect socket-path))
+  (call-with-values (thunk (unix-socket-connect socket-path))
                     (scan-input-port (open-input-file path) chunk-size)))
 
 (: clean? (-> Bytes Boolean))
