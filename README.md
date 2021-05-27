@@ -15,13 +15,31 @@ make install
 ## Usage
 
 ```racket
-(require clamav-client)
+#lang racket/base
+
+(require clamav-client
+         racket/unix-socket)
+
+;; Ping the server using a TCP connection
+(ping-tcp "localhost" 3310) ; => #"PONG\0"
 
 ;; Scan a file using a TCP connection
 (clean? (scan-file-tcp "/path/to/file" "localhost" 3310))
 
 ;; Scan a file using a Unix socket connection
-(clean? (scan-file-socket "/path/to/file" "/tmp/clamd.socket"))
+(when unix-socket-available?
+  (clean? (scan-file-socket "/path/to/file" "/tmp/clamd.socket")))
+
+;; `hostname`, `port`, and `socket-path` are parameters and allow dynamic binding
+(parameterize ([hostname "localhost"]
+               [port 3310])
+  (when (eq? (ping-tcp) #"PONG\0")
+    (clean? (scan-file-tcp "/path/to/file"))))
+
+(when unix-socket-available?
+  (parameterize ([socket-path "/tmp/clamd.socket"])
+    (when (eq? (ping-socket) #"PONG\0")
+      (clean? (scan-file-socket "/path/to/file")))))
 ```
 
 Take a look at the [tests](clamav-client-test/clamav-client.rkt) for further examples.
