@@ -15,6 +15,7 @@
          chunk-size)
 
 (require racket/function
+         racket/path
          racket/port
          racket/string)
 
@@ -87,22 +88,24 @@
 
 ;;; Scan file at path
 
-(: scan-file-tcp (->* (String) (String Positive-Index Integer) Bytes))
+(: scan-file-tcp (->* (Path-String) (String Positive-Index Integer) Bytes))
 (define (scan-file-tcp path
                        [hostname (hostname)]
                        [port (port)]
                        [chunk-size (chunk-size)])
-  (call-with-values (thunk (tcp-connect hostname port))
-                    (scan-input-port (open-input-file path) chunk-size)))
+  (let ([normalized-path (simple-form-path path)])
+    (call-with-values (thunk (tcp-connect hostname port))
+                      (scan-input-port (open-input-file normalized-path) chunk-size))))
 
-(: scan-file-socket (->* (String) (String Integer) Bytes))
+(: scan-file-socket (->* (Path-String) (String Integer) Bytes))
 (define (scan-file-socket path
                           [socket-path (socket-path)]
                           [chunk-size (chunk-size)])
   (unless unix-socket-available?
     (error "Unix sockets are not available on this platform"))
-  (call-with-values (thunk (unix-socket-connect socket-path))
-                    (scan-input-port (open-input-file path) chunk-size)))
+  (let ([normalized-path (simple-form-path path)])
+    (call-with-values (thunk (unix-socket-connect socket-path))
+                      (scan-input-port (open-input-file normalized-path) chunk-size))))
 
 (: clean? (-> Bytes Boolean))
 (define (clean? scan-result)
