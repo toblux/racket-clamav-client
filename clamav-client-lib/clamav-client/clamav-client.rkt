@@ -2,6 +2,7 @@
 
 (provide ping-tcp
          scan-file-tcp
+         error?
          clean?
 
          ;; Only available on Unix platforms
@@ -44,17 +45,16 @@
 
 (: ping (-> Input-Port Output-Port Bytes))
 (define (ping in out)
+
   ;; Send PING command
   (write-bytes #"zPING\0" out)
   (flush-output out)
 
-  ;; Close out
-  (close-output-port out)
-  (unless (port-closed? out)
-    (error 'out "output port not closed"))
-
-  ;; Read from in, close port, and return response bytes
-  (port->bytes in #:close? #t))
+  ;; Read response bytes from `in` and explicitly close both ports
+  (let ([response (port->bytes in)])
+    (close-output-port out)
+    (close-input-port in)
+    response))
 
 (: ping-tcp (->* () (String Positive-Index) Bytes))
 (define (ping-tcp [hostname (hostname)]
@@ -71,20 +71,32 @@
 
 (: scan-input-port (-> Input-Port Integer (-> Input-Port Output-Port Bytes)))
 (define ((scan-input-port input-port chunk-size) in out)
+
   ;; Send INSTREAM command
   (write-bytes #"zINSTREAM\0" out)
 
   ;; Stream chunk-sized bytes from input-port to out
-  (for ([bs (in-port (λ ([in : Input-Port]) (read-bytes chunk-size in)) input-port)])
-    (write-bytes (integer->integer-bytes (bytes-length bs) 4 #f #t) out)
-    (write-bytes bs out))
+  (for ([bytes (in-port (λ ([in : Input-Port])
+                          (read-bytes chunk-size in))
+                        input-port)]
+
+        ;; Check for a premature reply from clamd indicating an error
+        #:break (byte-ready? in))
+
+    ;; Send size of next chunk to clamd
+    (write-bytes (integer->integer-bytes (bytes-length bytes) 4 #f #t) out)
+    (write-bytes bytes out)
+    (flush-output out))
 
   ;; Terminate by sending a zero-length chunk
   (write-bytes (bytes 0 0 0 0) out)
   (flush-output out)
-  
-  ;; Read from in, close port, and return response bytes
-  (port->bytes in #:close? #t))
+
+  ;; Read response bytes from `in` and explicitly close both ports
+  (let ([response (port->bytes in)])
+    (close-output-port out)
+    (close-input-port in)
+    response))
 
 ;;; Scan file at path
 
@@ -106,6 +118,11 @@
   (let ([normalized-path (simple-form-path path)])
     (call-with-values (thunk (unix-socket-connect socket-path))
                       (scan-input-port (open-input-file normalized-path) chunk-size))))
+
+(: error? (-> Bytes Boolean))
+(define (error? scan-result)
+  (let ([result (bytes->string/utf-8 scan-result)])
+    (string-contains? result "ERROR")))
 
 (: clean? (-> Bytes Boolean))
 (define (clean? scan-result)
