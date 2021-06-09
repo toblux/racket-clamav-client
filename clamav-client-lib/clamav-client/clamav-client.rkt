@@ -15,6 +15,7 @@
          chunk-size)
 
 (require racket/function
+         racket/port
          racket/string)
 
 (require/typed racket/unix-socket
@@ -38,16 +39,6 @@
 (: chunk-size (Parameterof Positive-Index))
 (define chunk-size (make-parameter 2048))
 
-;;; Helper functions
-
-;; Read all bytes from input-port into memory
-(: read-all-bytes (-> Integer Input-Port Bytes))
-(define (read-all-bytes chunk-size input-port)
-  (let ([bytes (read-bytes chunk-size input-port)])
-    (if (eof-object? bytes)
-        #""
-        (bytes-append bytes (read-all-bytes chunk-size input-port)))))
-
 ;;; Ping clamd server
 
 (: ping (-> Input-Port Output-Port Bytes))
@@ -61,14 +52,8 @@
   (unless (port-closed? out)
     (error 'out "output port not closed"))
 
-  ;; Read from in, close port, and return response
-  (let* ([pong-response #"PONG\0"]
-         [chunk-size (bytes-length pong-response)]
-         [response (read-all-bytes chunk-size in)])
-    (close-input-port in)
-    (unless (port-closed? in)
-      (error 'in "input port not closed"))
-    response))
+  ;; Read from in, close port, and return response bytes
+  (port->bytes in #:close? #t))
 
 (: ping-tcp (->* () (String Positive-Index) Bytes))
 (define (ping-tcp [hostname (hostname)]
@@ -96,12 +81,9 @@
   ;; Terminate by sending a zero-length chunk
   (write-bytes (bytes 0 0 0 0) out)
   (flush-output out)
-
-  (let ([bytes (read-all-bytes chunk-size in)])
-    (close-input-port in)
-    (unless (port-closed? in)
-      (error 'in "input port not closed"))
-    bytes))
+  
+  ;; Read from in, close port, and return response bytes
+  (port->bytes in #:close? #t))
 
 ;;; Scan file at path
 
