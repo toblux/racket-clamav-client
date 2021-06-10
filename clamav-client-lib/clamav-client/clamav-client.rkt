@@ -48,13 +48,8 @@
 
   ;; Send PING command
   (write-bytes #"zPING\0" out)
-  (flush-output out)
-
-  ;; Read response bytes from `in` and explicitly close both ports
-  (let ([response (port->bytes in)])
-    (close-output-port out)
-    (close-input-port in)
-    response))
+  (close-output-port out)
+  (port->bytes in #:close? #t))
 
 (: ping-tcp (->* () (String Positive-Index) Bytes))
 (define (ping-tcp [hostname (hostname)]
@@ -74,6 +69,7 @@
 
   ;; Send INSTREAM command
   (write-bytes #"zINSTREAM\0" out)
+  (flush-output out)
 
   ;; Stream chunk-sized bytes from input-port to out
   (for ([bytes (in-port (λ ([in : Input-Port])
@@ -90,13 +86,8 @@
 
   ;; Terminate by sending a zero-length chunk
   (write-bytes (bytes 0 0 0 0) out)
-  (flush-output out)
-
-  ;; Read response bytes from `in` and explicitly close both ports
-  (let ([response (port->bytes in)])
-    (close-output-port out)
-    (close-input-port in)
-    response))
+  (close-output-port out)
+  (port->bytes in #:close? #t))
 
 ;;; Scan file at path
 
