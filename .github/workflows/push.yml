@@ -18,7 +18,7 @@ jobs:
           sudo systemctl stop clamav-freshclam
           sudo freshclam
       - name: Start clamd
-        run: clamd --config-file=.github/clamd.conf
+        run: clamd --config-file=clamav-client-test/clamd.conf
       - name: Install packages and run tests
         run: make ci
       - name: Shutdown clamd

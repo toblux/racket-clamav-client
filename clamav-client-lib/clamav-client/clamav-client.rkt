@@ -27,8 +27,7 @@
 (require/typed racket/tcp
                [tcp-connect (-> String Positive-Index (Values Input-Port Output-Port))])
 
-;;; Clamd commands are documented at https://linux.die.net/man/8/clamd
-;;; or simply run `man clamd`
+;;; clamd commands are documented at https://linux.die.net/man/8/clamd or simply run `man clamd`
 
 (define socket-path (make-parameter "/tmp/clamd.socket"))
 
@@ -37,9 +36,8 @@
 (: port (Parameterof Positive-Index))
 (define port (make-parameter 3310))
 
-;; Chunk size must not exceed StreamMaxLength as defined in clamd.conf
 (: chunk-size (Parameterof Positive-Index))
-(define chunk-size (make-parameter 2048))
+(define chunk-size (make-parameter 1024))
 
 ;;; Ping clamd server
 
