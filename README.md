@@ -30,8 +30,7 @@ make install
 (when unix-socket-available?
   (clean? (scan-file-socket "/path/to/file" "/tmp/clamd.socket")))
 
-;; `hostname`, `port`, `chunk-size`, and `socket-path` are parameters and allow
-;; dynamic binding
+;; `hostname`, `port`, `chunk-size`, and `socket-path` are parameters and allow dynamic binding
 (parameterize ([hostname "localhost"]
                [port 3310])
   (when (eq? (ping-tcp) #"PONG\0")
@@ -39,7 +38,7 @@ make install
 
 (when unix-socket-available?
   (parameterize ([socket-path "/tmp/clamd.socket"]
-                 [chunk-size 128])
+                 [chunk-size 256])
     (when (eq? (ping-socket) #"PONG\0")
       (clean? (scan-file-socket "/path/to/file")))))
 ```
