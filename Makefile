@@ -1,6 +1,8 @@
 LOCAL_CATALOG_PATH = catalog
 ALL_CATALOGS = $(LOCAL_CATALOG_PATH) $(shell raco pkg config catalogs)
 
+.PHONY: catalog install uninstall ci clean
+
 catalog:
 	@echo "Creating local packages catalog..."
 	racket -l- pkg/dirs-catalog --check-metadata $(LOCAL_CATALOG_PATH) .
