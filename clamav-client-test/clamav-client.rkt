@@ -68,6 +68,6 @@
 
   (when unix-socket-available?
     (parameterize ([socket-path "/tmp/clamd.socket"]
-                   [chunk-size 256])
+                   [chunk-size 128])
       (check-equal? (scan-file-socket eicar-test-filename) eicar-found-response)
       (check-equal? (scan-file-socket clean-test-filename) stream-ok-response))))
