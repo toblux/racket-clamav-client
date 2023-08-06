@@ -1,5 +1,5 @@
 LOCAL_CATALOG_PATH = catalog
-ALL_CATALOGS = $(LOCAL_CATALOG_PATH) $(shell raco pkg config catalogs)
+ALL_CATALOGS = $(LOCAL_CATALOG_PATH)
 
 .PHONY: catalog install uninstall ci clean
 
