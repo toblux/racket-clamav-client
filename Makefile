@@ -1,5 +1,4 @@
 LOCAL_CATALOG_PATH = catalog
-ALL_CATALOGS = $(LOCAL_CATALOG_PATH)
 
 .PHONY: catalog install uninstall ci clean
 
@@ -9,19 +8,14 @@ catalog:
 
 install: catalog
 	@echo "Installing clamav-client from local packages catalog..."
-	raco pkg install \
-		$(foreach catalog, $(ALL_CATALOGS), --catalog $(catalog)) \
-		--auto clamav-client
+	raco pkg install --catalog $(LOCAL_CATALOG_PATH) --auto clamav-client
 
 uninstall:
 	@echo "Uninstalling clamav-client and auto-installed dependencies..."
 	raco pkg remove --auto clamav-client
 
 ci: catalog
-	raco pkg install \
-		$(foreach catalog, $(ALL_CATALOGS), --catalog $(catalog)) \
-		--skip-installed --link --auto clamav-client-test
-
+	raco pkg install --catalog $(LOCAL_CATALOG_PATH) --auto clamav-client-test
 	raco test --drdr -p clamav-client-test
 
 clean:
