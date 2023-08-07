@@ -15,7 +15,8 @@ uninstall:
 	raco pkg remove --auto clamav-client
 
 ci: catalog
-	raco pkg install --catalog $(LOCAL_CATALOG_PATH) --auto clamav-client-test
+	raco pkg install --catalog $(LOCAL_CATALOG_PATH) \
+		--skip-installed --auto clamav-client-test
 	raco test --drdr -p clamav-client-test
 
 clean:
