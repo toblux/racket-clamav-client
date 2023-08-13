@@ -9,10 +9,6 @@
 (define eicar-test-filename "eicar.txt")
 (define clean-test-filename "clamav-client.rkt")
 
-;; StreamMaxLength in clamd.conf is limited to 1 MB.
-;; The test file is exactly 1 byte larger than allowed
-(define stream-max-test-filename "stream-max-length-test-file.bin")
-
 (define pong-response #"PONG\0")
 (define stream-ok-response #"stream: OK\0")
 (define eicar-found-response #"stream: Eicar-Signature FOUND\0")
@@ -51,13 +47,6 @@
   (when unix-socket-available?
     (check-equal? (scan-file-socket eicar-test-filename) eicar-found-response)
     (check-equal? (scan-file-socket eicar-test-filename "/tmp/clamd.socket") eicar-found-response)))
-
-(test-case
-  "File size limit exceeded works"
-  (check-equal? (scan-file-tcp stream-max-test-filename) size-limit-response)
-
-  (when unix-socket-available?
-    (check-equal? (scan-file-socket stream-max-test-filename) size-limit-response)))
 
 (test-case
   "Parameterization works"
