@@ -11,7 +11,7 @@
 
 ;; StreamMaxLength in clamd.conf is limited to 1 MB.
 ;; The test file is exactly 1 byte larger than allowed
-(define stream-max-test-filename "stream-max-length+1byte-test-file.bin")
+(define stream-max-test-filename "stream-max-length-test-file.bin")
 
 (define pong-response #"PONG\0")
 (define stream-ok-response #"stream: OK\0")
