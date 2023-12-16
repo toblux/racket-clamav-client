@@ -11,14 +11,8 @@ jobs:
         uses: Bogdanp/setup-racket@v1.10
         with:
           version: 'stable'
-      - name: Install ClamAV daemon
-        run: sudo apt-get install clamav-daemon
-      - name: Update ClamAV virus databases
-        run: |
-          sudo systemctl stop clamav-freshclam
-          sudo freshclam
-      - name: Start clamd
-        run: clamd --config-file=clamav-client-test/clamd.conf
+      - name: Start ClamAV daemon (clamd)
+        uses: toblux/start-clamd-github-action@main
       - name: Install packages and run tests
         run: make ci
       - name: Shutdown clamd
