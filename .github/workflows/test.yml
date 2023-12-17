@@ -12,7 +12,7 @@ jobs:
         with:
           version: 'stable'
       - name: Start ClamAV daemon clamd
-        uses: toblux/start-clamd-github-action@main
+        uses: toblux/start-clamd-github-action@v0.1.0
       - name: Install packages and run tests
         run: make ci
   test_ubuntu:
@@ -25,6 +25,6 @@ jobs:
         with:
           version: 'stable'
       - name: Start ClamAV daemon clamd
-        uses: toblux/start-clamd-github-action@main
+        uses: toblux/start-clamd-github-action@v0.1.0
       - name: Install packages and run tests
         run: make ci
