@@ -11,7 +11,7 @@ jobs:
         uses: Bogdanp/setup-racket@v1.11
         with:
           version: 'stable'
-      - name: Start ClamAV daemon (clamd)
+      - name: Start ClamAV daemon clamd
         uses: toblux/start-clamd-github-action@main
       - name: Install packages and run tests
         run: make ci
@@ -26,7 +26,7 @@ jobs:
         uses: Bogdanp/setup-racket@v1.11
         with:
           version: 'stable'
-      - name: Start ClamAV daemon (clamd)
+      - name: Start ClamAV daemon clamd
         uses: toblux/start-clamd-github-action@main
       - name: Install packages and run tests
         run: make ci
