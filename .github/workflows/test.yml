@@ -15,8 +15,6 @@ jobs:
         uses: toblux/start-clamd-github-action@main
       - name: Install packages and run tests
         run: make ci
-      - name: Shutdown clamd
-        run: echo SHUTDOWN | nc localhost 3310
   test_ubuntu:
     runs-on: ubuntu-latest
     steps:
@@ -30,5 +28,3 @@ jobs:
         uses: toblux/start-clamd-github-action@main
       - name: Install packages and run tests
         run: make ci
-      - name: Shutdown clamd
-        run: echo SHUTDOWN | nc localhost 3310
